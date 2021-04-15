@@ -1,4 +1,4 @@
-Configuration ConfigurePDC
+Configuration ConfigureBDC
 {
     
     param
