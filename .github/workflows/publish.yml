@@ -4,7 +4,7 @@ on:
     branches:
     - '!main'
     paths:
-    - 'ConfigureBDC.ps1'
+    - './ConfigureBDC.ps1'
 jobs:
   publish-modules:
     runs-on: windows-latest
