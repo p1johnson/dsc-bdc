@@ -7,29 +7,29 @@ on:
     - 'ConfigureBDC.ps1'
 jobs:
   publish-modules:
-  runs-on: windows-latest
-  steps:
-  - uses: actions/checkout@v2
-    with:
-      persist-credentials: false
-      fetch-depth: 0
-  - name: Install modules
-    shell: pwsh
-    run: |
-      Set-PSRepository PSGallery -InstallationPolicy Trusted
-      Install-Module Az.Compute, xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
-  - name: Publish module
-    shell: pwsh
-    run: Publish-AzVMDscConfiguration ConfigureBDC.ps1 -OutputArchivePath ConfigureBDC.zip -Force
-  - name: Commit module
-    run: |
-      git config --local user.email "39245689+github-actions[bot]@users.noreply.github.com"
-      git config --local user.name "github-ations[bot]"
-      git add ConfigureBDC.zip
-      git commit -m "Publish"
-  - name: Push changes
-    uses: ad-m/github-push-action@master
-    with:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
-      branch: ${{ github.ref }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - name: Install modules
+      shell: pwsh
+      run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module Az.Compute, xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
+    - name: Publish module
+      shell: pwsh
+      run: Publish-AzVMDscConfiguration ConfigureBDC.ps1 -OutputArchivePath ConfigureBDC.zip -Force
+    - name: Commit module
+      run: |
+        git config --local user.email "39245689+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-ations[bot]"
+        git add ConfigureBDC.zip
+        git commit -m "Publish"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
       
