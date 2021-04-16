@@ -18,7 +18,9 @@ jobs:
         Install-Module xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
     - name: Publish module
       shell: pwsh
-      run: Publish-AzVMDscConfiguration ConfigureBDC.ps1 -OutputArchivePath ConfigureBDC.zip -Force
+      run: |
+        Import-Module Az.Compute
+        Publish-AzVMDscConfiguration ConfigureBDC.ps1 -OutputArchivePath ConfigureBDC.zip -Force
     - name: Commit module
       run: |
         git config --local user.email "39245689+github-actions[bot]@users.noreply.github.com"
