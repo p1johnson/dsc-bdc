@@ -12,11 +12,13 @@ Configuration ConfigureBDC
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$Admincreds,
 
+        [String[]]$DnsForwarders=@("168.63.129.16"),
+
         [Int]$RetryCount=20,
         [Int]$RetryIntervalSec=30
     )
 
-    Import-DscResource -ModuleName xActiveDirectory, xPendingReboot, xStorage, xNetworking
+    Import-DscResource -ModuleName xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
 
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
     $Interface=Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
@@ -27,6 +29,38 @@ Configuration ConfigureBDC
         LocalConfigurationManager
         {
             RebootNodeIfNeeded = $true
+        }
+        
+        WindowsFeature DNS
+        {
+            Ensure = "Present"
+            Name = "DNS"
+        }
+
+        Script EnableDNSDiags
+        {
+      	    SetScript = {
+                Set-DnsServerDiagnostics -All $true
+                Write-Verbose -Verbose "Enabling DNS client diagnostics"
+            }
+            GetScript =  { @{} }
+            TestScript = { $false }
+            DependsOn = "[WindowsFeature]DNS"
+        }
+
+        WindowsFeature DnsTools
+        {
+            Ensure = "Present"
+            Name = "RSAT-DNS-Server"
+            DependsOn = "[WindowsFeature]DNS"
+        }
+
+        xDnsServerForwarder 'SetForwarders'
+        {
+            IsSingleInstance = 'Yes'
+            IPAddresses      = $DnsForwarders
+            UseRootHint      = $false
+            DependsOn = "[WindowsFeature]DNS"
         }
 
         xWaitforDisk Disk2
@@ -47,6 +81,7 @@ Configuration ConfigureBDC
         {
             Ensure = "Present"
             Name = "AD-Domain-Services"
+            DependsOn = "[WindowsFeature]DNS"
         }
 
         WindowsFeature ADDSTools
@@ -68,7 +103,7 @@ Configuration ConfigureBDC
             Address        = $DNSServer
             InterfaceAlias = $InterfaceAlias
             AddressFamily  = 'IPv4'
-            DependsOn="[WindowsFeature]ADDSInstall"
+            DependsOn = "[WindowsFeature]ADDSInstall"
         }
 
         xWaitForADDomain DscForestWait
@@ -88,10 +123,11 @@ Configuration ConfigureBDC
             DatabasePath = "F:\NTDS"
             LogPath = "F:\NTDS"
             SysvolPath = "F:\SYSVOL"
-            DependsOn = "[xWaitForADDomain]DscForestWait"
+            DependsOn =  @("[xWaitForADDomain]DscForestWait", "[xDisk]ADDataDisk")
         }
 
-        xPendingReboot RebootAfterPromotion {
+        xPendingReboot RebootAfterPromotion 
+        {
             Name = "RebootAfterDCPromotion"
             DependsOn = "[xADDomainController]BDC"
         }
