@@ -15,7 +15,7 @@ jobs:
       shell: pwsh
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
-        Install-Module Az, xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
+        Install-Module Az, xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer -AllowClobber
     - name: Publish module
       shell: pwsh
       run: |
