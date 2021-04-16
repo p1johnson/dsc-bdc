@@ -15,7 +15,7 @@ jobs:
       shell: pwsh
       run: |
         Set-PSRepository PSGallery -InstallationPolicy Trusted
-        Install-Module Az.Compute, xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
+        Install-Module xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
     - name: Publish module
       shell: pwsh
       run: Publish-AzVMDscConfiguration ConfigureBDC.ps1 -OutputArchivePath ConfigureBDC.zip -Force
