@@ -1,10 +1,8 @@
 name: publish
 on:
   push:
-    branches:
-    - '!main'
-#    paths:
-#    - 'ConfigureBDC.ps1'
+    branches-ignore: [main]
+    paths: [ConfigureBDC.ps1]
 jobs:
   publish-modules:
     runs-on: windows-latest
