@@ -18,7 +18,7 @@ Configuration ConfigureBDC
         [Int]$RetryIntervalSec=30
     )
 
-    # Update comment to test publishing
+    # Update comment to test publishing #4
     Import-DscResource -ModuleName xActiveDirectory, xPendingReboot, xStorage, xNetworking, xDnsServer
 
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
