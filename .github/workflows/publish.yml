@@ -4,16 +4,13 @@ on:
     branches-ignore: [main]
     paths: [ConfigureBDC.ps1]
 jobs:
-  publish-modules:
+  publish-module:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
       with:
         persist-credentials: false
         fetch-depth: 0
-    - name: List installed modules
-      shell: pwsh
-      run: Get-Module -ListAvailable
     - name: Install modules
       shell: pwsh
       run: |
@@ -28,7 +25,7 @@ jobs:
         git config --local user.email "39245689+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-ations[bot]"
         git add ConfigureBDC.zip
-        git commit -m "Publish"
+        git commit -m "Publish updated ConfigureBDC.zip file"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
